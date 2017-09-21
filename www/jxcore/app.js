@@ -12,6 +12,7 @@ var randomString = require('randomstring');
 var nearbyPeers = [];
 var sockets = {};
 var log;
+var updateNearbyPeers;
 // process.env.DEBUG = 'thalisalti:acl';
 process.env.SSDP_NT = 'random-ssdp-nt:' + require('./SSDP');
 
@@ -41,8 +42,12 @@ Mobile('init').registerAsync(function (logAreaCallback) {
     startAndListen(server, peerAvailabilityChangedHandler);
 });
 
-Mobile('getNearbyPeers').registerAsync(function (cb) {
-    cb(nearbyPeers);
+Mobile('setNearbyPeersCallback').registerAsync(function (cb) {
+    updateNearbyPeers = cb;
+});
+
+Mobile('refreshNearbyPeers').registerAsync(function () {
+    updateNearbyPeers(nearbyPeers);
 });
 
 Mobile('connectToPeer').registerAsync(function (peer) {
@@ -97,7 +102,7 @@ function createServer() {
                 syncTime = Date.now() - timeStamp;
                 log('Total data received: ' + buffer.length + ' bytes');
                 log('Time ' + syncTime + ' ms');
-                log('Transfer rate:' + (((buffer.length * 8 / 1024) / (syncTime / 1000)) / 1000)
+                log('Transfer rate: ' + (((buffer.length * 8 / 1024) / (syncTime / 1000)) / 1000)
                         .toFixed(5).toString() + ' Mbps\n');
                 buffer = '';
             }
@@ -215,6 +220,8 @@ function peerAvailabilityChangedHandler(peerAsArray) {
         nearbyPeers.push({
             peer: peer
         });
+
+        updateNearbyPeers(nearbyPeers);
     }
 }
 

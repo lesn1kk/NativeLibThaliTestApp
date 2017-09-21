@@ -66,6 +66,8 @@ var app = {
         loadedElement.setAttribute('style', 'display:block;');
         receivedElement.setAttribute('style', 'display:none;');
         console.log('jxcore loaded');
+        
+        setNearbyPeersCallback();
     }
 };
 
@@ -82,8 +84,8 @@ function setUpClientAndServer() {
     jxcore('init').call(addTextToLogArea);
 }
 
-function getNearbyPeers() {
-    jxcore('getNearbyPeers').call(function (peers) {
+function setNearbyPeersCallback() {
+    jxcore('setNearbyPeersCallback').call(function (peers) {
         var list = document.getElementById('peersList');
         var i, record;
 
@@ -95,6 +97,10 @@ function getNearbyPeers() {
             list.add(record);
         }
     });
+}
+
+function refreshNearbyPeers() {
+    jxcore('refreshNearbyPeers').call();
 }
 
 function getSelectedPeer() {
