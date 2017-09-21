@@ -51,6 +51,8 @@ Mobile('connectToPeer').registerAsync(function (peer) {
             connect(net, {port: connection.listeningPort})
                 .then(function(sock) {
                     sockets[peer.peerIdentifier] = sock;
+                    
+                    log('Connected to ' + peer.peerIdentifier);
                 });
         });
 });
