@@ -7,34 +7,27 @@ This is a simple Thali native test application.
 In order to build the application follow the steps:
 
 1. Clone 2 GIT repos in the same location:
-    * https://github.com/thaliproject/ThaliTestApp.git (master branch)
+    * https://github.com/mlesnic/NativeLibThaliTestApp.git (master branch)
     * https://github.com/thaliproject/Thali_CordovaPlugin.git (master branch)
 1. You need to have sinopia configured and running as described in Thali_CordovaPlugin.
 Custom express-pouchdb (1.0.5-thali) must be available.
 1. Enter the Thali_CordovaPlugin folder and run:
 `./build.sh`
-1. Enter the ThaliTestApp folder and run:
+1. Enter the NativeLibThaliTestApp folder and run:
 `./prepare.sh`
 1. Now you can build the cordova app using command:
 `cordova build android --device`
 `cordova build ios --device`
 
 # Run instructions #
-1. On first run on Android you will be asked for location permissions - it must be granted
-if you want to use native mode.
-1. When app starts on two devices select mode (WiFi or Native) on both devices using buttons. 
-1. On both devices init Thali - you must use button Init #1 on first device
-and Init #2 on second device in order to have Thali working
-(related to ECDH keys used by devices).
-1. Now you can start/stop Thali on both devices using buttons Start and Stop.
-1. Button Add data adds data to local PouchDB. The added document content is:
-   `[<ID>] TEST DATA #<SEQ>`
-   where <ID> is id of device that created this document (corresponding to number used by Init Thali button),
-   <SEQ> is sequential number of document created by gived device.
-   In the LAST CHANGE field you may see the last change reported by PouchDB
-   (TIME RECEIVED shows time when the change was received).
-   This way you may check if the replication is working. Note that also your own changes are
-   logged in LAST CHANGE.
-1. Button Add attachment adds attachment to local PouchDB.
-1. Button Start test may be used to start continuos test (adding data, stopping and starting Thali).
+1. First of all you need to wait for JxCore to load completely, this will be indicated by
+   label at the top of screen.
+1. Then click Init on both devices. This will create servers on both devices and start advertising and listening
+   for advertisements.
+1. Refresh list updates current nearby peers list. Clear list clears this list (for example when you know the peer is gone).
+   Unfortunately, we can't be sure that we will get proper event when peer is gone.
+1. Connect to peer button connects one device to another.
+1. When you are sure you are connected with other device, you can send data to that device. The data size is also
+   selectable below. 
+1. Logs are gathered at the bottom of screen.
 Note that device (especially iOS) should not go background as this is not handled by the app.
