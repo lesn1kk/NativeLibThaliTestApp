@@ -9,8 +9,6 @@ In order to build the application follow the steps:
 1. Clone 2 GIT repos in the same location:
     * https://github.com/mlesnic/NativeLibThaliTestApp.git (master branch)
     * https://github.com/thaliproject/Thali_CordovaPlugin.git (master branch)
-1. You need to have sinopia configured and running as described in Thali_CordovaPlugin.
-Custom express-pouchdb (1.0.5-thali) must be available.
 1. Enter the Thali_CordovaPlugin folder and run:
 `./build.sh`
 1. Enter the NativeLibThaliTestApp folder and run:
