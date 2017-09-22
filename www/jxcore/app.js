@@ -109,7 +109,7 @@ function createServer() {
                 syncTime = Date.now() - timeStamp;
                 logger('Total data received: ' + buffer.length + ' bytes');
                 logger('Time: ' + syncTime + ' ms');
-                logger('Transfer rate: ' + (((buffer.length * 8) / (syncTime / 1000)) / 10e6)
+                logger('Transfer rate: ' + (((buffer.length * 8) / syncTime) * 1000 / 10e6)
                         .toFixed(5).toString() + ' Mbps\n');
                 buffer = '';
             }
