@@ -74,14 +74,32 @@ var app = {
 app.initialize();
 
 var peersList = [];
+var timeStampDiscoveryBefore;
+var runningDiscoveryTest = false;
 
 function addTextToLogArea(text) {
     var logArea = document.getElementById('logArea');
     logArea.value += (text + '\n');
 }
 
+function logDiscoveredDevice(peer, timeStampDiscoveryAfter) {
+    addTextToLogArea('Discovered ' + peer.peerIdentifier);
+    
+    if (runningDiscoveryTest && timeStampDiscoveryBefore) {
+        addTextToLogArea('Discovery test ended after ' + 
+            (timeStampDiscoveryAfter - timeStampDiscoveryBefore) + ' ms!\n');
+
+        runningDiscoveryTest = false;
+        timeStampDiscoveryBefore = null;
+    }
+}
+
 function setUpClientAndServer() {
-    jxcore('init').call(addTextToLogArea);
+    jxcore('setupClientAndServer').call();
+    jxcore('setLogAreaCallback').call(addTextToLogArea);
+    jxcore('setDiscoveredDeviceCallback').call(logDiscoveredDevice);
+    
+    addTextToLogArea('Start listening and advertising');
 }
 
 function setNearbyPeersCallback() {
@@ -117,21 +135,61 @@ function connectToPeer() {
     jxcore('connectToPeer').call(selectedPeer);
 }
 
-function sendData() {
-    var selectedPeer = getSelectedPeer();
+function connectToAllPeers() {
+    var allPeers = document.getElementById('peersList').options;
+    var i;
+
+    for (i = 0; i < allPeers.length; i++) {
+        jxcore('connectToPeer').call({
+            peerIdentifier: allPeers[i].text
+        });
+    }
+}
+
+function sendDataToSelectedPeer() {
+    sendData(getSelectedPeer());
+}
+
+function sendDataToAllPeers() {
+    var allPeers = document.getElementById('peersList').options;
+    var i;
+
+    for (i = 0; i < allPeers.length; i++) {
+        sendData({
+            peerIdentifier: allPeers[i].text
+        });
+    }
+}
+
+function sendData(peer) {
     var e = document.getElementById('dataSize');
     var dataSize = 1024 * e.options[e.selectedIndex].value; // make it kiloBytes
     
-    jxcore('sendData').call(selectedPeer, dataSize, function () {
+    jxcore('sendData').call(peer, dataSize, function () {
         console.log('Send data called');
     });
 }
 
 function stopListeningAndAdvertising() {
-    jxcore('stop').call(function () {
-        console.log('Stop called!');
+    return new Promise(function(resolve, reject) {
+        jxcore('stop').call(function (err) {
+            addTextToLogArea('Stop listening and advertising');
+            console.log('Stop called!');
+
+            !!err ? reject(err) : resolve();
+        });
     });
 }
+
+function runDiscoveryTest() {
+    runningDiscoveryTest = true;
+
+    stopListeningAndAdvertising()
+        .then(function() {
+            setUpClientAndServer();
+            timeStampDiscoveryBefore = Date.now();
+        });
+};
 
 function clearPeersList() {
     var list = document.getElementById('peersList');

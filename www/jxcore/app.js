@@ -11,8 +11,9 @@ var randomString = require('randomstring');
 
 var nearbyPeers = [];
 var sockets = {};
-var log;
+var logger;
 var updateNearbyPeers;
+var logDiscoveredDevice;
 // process.env.DEBUG = 'thalisalti:acl';
 process.env.SSDP_NT = 'random-ssdp-nt:' + require('./SSDP');
 
@@ -35,11 +36,17 @@ process
         console.log('process exited, code: \'%s\', signal: \'%s\'', code, signal);
     });
 
-Mobile('init').registerAsync(function (logAreaCallback) {
-    log = logAreaCallback;
-    
+Mobile('setupClientAndServer').registerAsync(function () {
     var server = createServer();
     startAndListen(server, peerAvailabilityChangedHandler);
+});
+
+Mobile('setLogAreaCallback').registerAsync(function (cb) {
+    logger = cb;
+});
+
+Mobile('setDiscoveredDeviceCallback').registerAsync(function (cb) {
+    logDiscoveredDevice = cb;
 });
 
 Mobile('setNearbyPeersCallback').registerAsync(function (cb) {
@@ -56,8 +63,8 @@ Mobile('connectToPeer').registerAsync(function (peer) {
             connect(net, {port: connection.listeningPort})
                 .then(function(sock) {
                     sockets[peer.peerIdentifier] = sock;
-                    
-                    log('Connected to ' + peer.peerIdentifier);
+
+                    logger('Connected to ' + peer.peerIdentifier);
                 });
         });
 });
@@ -66,6 +73,7 @@ Mobile('sendData').registerAsync(function (selectedPeer, dataSize) {
     var timeStamp = Date.now();
     var data = randomString.generate(dataSize) + ':timeStamp:' + timeStamp;
 
+    logger('Sending ' + data.length + ' bytes' + ' to ' + selectedPeer.peerIdentifier);
     shiftData(sockets[selectedPeer.peerIdentifier], data);
 });
 
@@ -100,9 +108,9 @@ function createServer() {
 
             if (timeStamp > -1) {
                 syncTime = Date.now() - timeStamp;
-                log('Total data received: ' + buffer.length + ' bytes');
-                log('Time ' + syncTime + ' ms');
-                log('Transfer rate: ' + (((buffer.length * 8 / 1024) / (syncTime / 1000)) / 1000)
+                logger('Total data received: ' + buffer.length + ' bytes');
+                logger('Time: ' + syncTime + ' ms');
+                logger('Transfer rate: ' + (((buffer.length * 8 / 1024) / (syncTime / 1000)) / 1000)
                         .toFixed(5).toString() + ' Mbps\n');
                 buffer = '';
             }
@@ -222,6 +230,8 @@ function peerAvailabilityChangedHandler(peerAsArray) {
         });
 
         updateNearbyPeers(nearbyPeers);
+
+        logDiscoveredDevice(peer, Date.now());
     }
 }
 
@@ -256,6 +266,7 @@ function stopListeningAndAdvertising() {
                 !err ? resolve() : reject('Should be able to call stopAdvertisingAndListening');
                 
                 sockets = {};
+                nearbyPeers = [];
             });
         });
     });
@@ -273,9 +284,8 @@ function shiftData(sock, exchangeData) {
         });
 
         var rawData = new Buffer(exchangeData);
-        log('Client sends data ' + rawData.length + ' bytes');
         sock.write(rawData, function () {
-            log('Client data flushed\n');
+            logger('Data flushed\n');
         });
     });
 }

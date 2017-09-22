@@ -51,16 +51,20 @@
         </div>
         <hr />
         <div class="buttons">
-            <button id="initButton" onclick="setUpClientAndServer()">Init</button>
+            <button id="setupButton" onclick="setUpClientAndServer()">Setup client/server</button>
             <br />
             <button id="refreshList" onclick="refreshNearbyPeers()">Refresh list</button>
             <button id="clearList" onclick="clearPeersList()">Clear list</button>
             <br />
-            <button id="connectToPeers" onclick="connectToPeer()">Connect to peer</button>
+            <button id="connectToPeer" onclick="connectToPeer()">Connect to peer</button>
+            <button id="connectToAllPeers" onclick="connectToAllPeers()">Connect to all peers</button>
             <br />
-            <button id="sendDataToSelectedPeers" onclick="sendData()">Send data to selected peer</button>
+            <button id="sendDataToSelectedPeer" onclick="sendDataToSelectedPeer()">Send data to selected peer</button>
+            <button id="sendDataToAllPeers" onclick="sendDataToAllPeers()">Send data to all peers</button>
             <br />
             <button id="stopListeningAndAdvertising" onclick="stopListeningAndAdvertising()">Stop</button>
+            <br />
+            <button id="runDiscoveryTest" onclick="runDiscoveryTest()">Run discovery test</button>
         </div>
         <hr />
         <p>Data size:</p>
