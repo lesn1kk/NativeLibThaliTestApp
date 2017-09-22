@@ -70,8 +70,7 @@ Mobile('connectToPeer').registerAsync(function (peer) {
 });
 
 Mobile('sendData').registerAsync(function (selectedPeer, dataSize) {
-    var timeStamp = Date.now();
-    var data = randomString.generate(dataSize) + ':timeStamp:' + timeStamp;
+    var data = randomString.generate(dataSize);
 
     logger('Sending ' + data.length + ' bytes' + ' to ' + selectedPeer.peerIdentifier);
     shiftData(sockets[selectedPeer.peerIdentifier], data);
@@ -110,7 +109,7 @@ function createServer() {
                 syncTime = Date.now() - timeStamp;
                 logger('Total data received: ' + buffer.length + ' bytes');
                 logger('Time: ' + syncTime + ' ms');
-                logger('Transfer rate: ' + (((buffer.length * 8 / 1024) / (syncTime / 1000)) / 1000)
+                logger('Transfer rate: ' + (((buffer.length * 8) / (syncTime / 1000)) / 10e6)
                         .toFixed(5).toString() + ' Mbps\n');
                 buffer = '';
             }
@@ -285,7 +284,9 @@ function shiftData(sock, exchangeData) {
 
         var rawData = new Buffer(exchangeData);
         sock.write(rawData, function () {
-            logger('Data flushed\n');
+            sock.write(new Buffer(':timeStamp:' + Date.now()), function () {
+                logger('Data flushed\n');
+            })
         });
     });
 }
