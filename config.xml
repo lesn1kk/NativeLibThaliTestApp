@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.example.NativeLibThaliTestApp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.rockwellautomation.NativeLibThaliTestApp" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>NativeLibThaliTestApp</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -37,6 +37,9 @@
         <preference name="ios-XCBuildConfiguration-GCC_NO_COMMON_BLOCKS" value="YES" />
         <preference name="ios-XCBuildConfiguration-GCC_WARN_64_TO_32_BIT_CONVERSION" value="YES" />
         <preference name="ios-XCBuildConfiguration-SWIFT_OPTIMIZATION_LEVEL" value="-Owholemodule" />
+        <config-file platform="ios" target="*-Info.plist" parent="NSBluetoothPeripheralUsageDescription">
+            <string>This app requires bluetooth access to function properly.</string>
+        </config-file>
     </platform>
     <plugin name="cordova-custom-config" spec="~3.1.4" />
 </widget>

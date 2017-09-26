@@ -285,7 +285,7 @@ function shiftData(sock, exchangeData) {
         var rawData = new Buffer(exchangeData);
         sock.write(rawData, function () {
             sock.write(new Buffer(':timeStamp:' + Date.now()), function () {
-                logger('Data flushed\n');
+                logger('Data flushed');
             })
         });
     });
